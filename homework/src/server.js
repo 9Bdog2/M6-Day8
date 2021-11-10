@@ -8,6 +8,7 @@ import {
   genericErrorHandler,
 } from "./errorHandlers.js";
 import blogRouter from "./services/users/index.js";
+import commentsRouter from "./services/users/comments/index.js";
 
 const server = express();
 const port = process.env.PORT || 3001;
@@ -16,6 +17,7 @@ server.use(cors());
 server.use(express.json());
 // ********************************* ROUTES ***************************************
 server.use("/blog", blogRouter);
+server.use("/comments", commentsRouter);
 // ********************************* ERROR HANDLERS ***************************************
 
 server.use(notFoundHandler);
