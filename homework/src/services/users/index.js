@@ -1,13 +1,12 @@
 import express from "express";
 import createHttpError from "http-errors";
-import blogPostsSchema from "./schema.js";
-import commentsSchema from "./schema.js";
+import blogPostModel from "./schema.js";
 
 const blogRouter = express.Router();
 
 blogRouter.get("/", async (req, res, next) => {
   try {
-    const users = await blogPostsSchema.find();
+    const users = await blogPostModel.find();
     res.send(users);
   } catch (err) {
     next(err);
@@ -16,7 +15,7 @@ blogRouter.get("/", async (req, res, next) => {
 
 blogRouter.post("/", async (req, res, next) => {
   try {
-    const newUser = new blogPostsSchema(req.body);
+    const newUser = new blogPostModel(req.body);
     const { _id } = await newUser.save();
     res.status(201).json({ _id });
   } catch (err) {
@@ -26,7 +25,7 @@ blogRouter.post("/", async (req, res, next) => {
 
 blogRouter.get("/:userId", async (req, res, next) => {
   try {
-    const user = await blogPostsSchema.findById(req.params.userId);
+    const user = await blogPostModel.findById(req.params.userId);
     if (!user) {
       throw createHttpError(404, "User not found");
     }
@@ -38,7 +37,7 @@ blogRouter.get("/:userId", async (req, res, next) => {
 
 blogRouter.put("/:userId", async (req, res, next) => {
   try {
-    const user = await blogPostsSchema.findByIdAndUpdate(
+    const user = await blogPostModel.findByIdAndUpdate(
       req.params.userId,
       req.body,
       {
@@ -57,7 +56,7 @@ blogRouter.put("/:userId", async (req, res, next) => {
 
 blogRouter.delete("/:userId", async (req, res, next) => {
   try {
-    const user = await blogPostsSchema.findByIdAndDelete(req.params.userId);
+    const user = await blogPostModel.findByIdAndDelete(req.params.userId);
     if (!user) {
       throw createHttpError(404, "User not found");
     }
@@ -70,16 +69,16 @@ blogRouter.delete("/:userId", async (req, res, next) => {
 blogRouter
   .post("/:userId/comments", async (req, res, next) => {
     try {
-      const comments = await commentsSchema.findById(req.body.commentId, {
+      const comments = await blogPostModel.findById(req.params.userId, {
         _id: 0,
       });
       if (comments) {
         const commentToInsert = {
-          ...comments.toObject(),
+          ...req.body,
           commentDate: new Date(),
         };
         console.log(commentToInsert);
-        const updatedBlog = await blogPostsSchema.findByIdAndUpdate(
+        const updatedBlog = await blogPostModel.findByIdAndUpdate(
           req.params.userId,
           { $push: { comments: commentToInsert } },
           { new: true }
@@ -94,10 +93,7 @@ blogRouter
         }
       } else {
         next(
-          createHttpError(
-            404,
-            `Comment with ID ${req.body.commentId} not found`
-          )
+          createHttpError(404, `Comment with ID ${req.params.userId} not found`)
         );
       }
     } catch (err) {
@@ -106,7 +102,7 @@ blogRouter
   })
   .get("/:userId/comments", async (req, res, next) => {
     try {
-      const comments = await blogPostsSchema.findById(req.params.userId, {
+      const comments = await blogPostModel.findById(req.params.userId, {
         comments: 1,
       });
       if (comments) {
@@ -124,7 +120,7 @@ blogRouter
 blogRouter
   .get("/:userId/comments/:commentId", async (req, res, next) => {
     try {
-      const comment = await blogPostsSchema.findById(req.params.userId);
+      const comment = await blogPostModel.findById(req.params.userId);
       if (comment) {
         const commentToStore = comment.comments.find(
           (comment) => comment._id.toString() === req.params.commentId
@@ -150,7 +146,7 @@ blogRouter
   })
   .delete("/:userId/comments/:commentId", async (req, res, next) => {
     try {
-      const modifiedBlog = await blogPostsSchema.findByIdAndUpdate(
+      const modifiedBlog = await blogPostModel.findByIdAndUpdate(
         req.params.userId,
         { $pull: { comments: { _id: req.params.commentId } } },
         { new: true }
@@ -171,14 +167,14 @@ blogRouter
   })
   .put("/:userId/comments/:commentId", async (req, res, next) => {
     try {
-      const blog = await blogPostsSchema.findById(req.params.userId);
+      const blog = await blogPostModel.findById(req.params.userId);
       if (blog) {
         const index = blog.comments.findIndex(
           (p) => p._id.toString() === req.params.commentId
         );
 
         if (index !== -1) {
-          user.comments[index] = {
+          blog.comments[index] = {
             ...blog.comments[index].toObject(),
             ...req.body,
           };

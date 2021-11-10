@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const { Schema, model } = mongoose;
 
-const blogPostsSchema  = new Schema(
+const blogPostsSchema = new Schema(
   {
     category: {
       type: String,
@@ -48,6 +48,14 @@ const blogPostsSchema  = new Schema(
       type: String,
       required: true,
     },
+    comments: [
+      {
+        type: new mongoose.Schema({
+          name: { type: String },
+          comment: { type: String },
+        }),
+      },
+    ],
   },
   {
     timestamps: true,
