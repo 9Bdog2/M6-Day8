@@ -7,3 +7,18 @@ Advanced queries
 Very common in MongoDb to embed informations
 Serverside pagination is a killer feature 
 
+Sort// not a number, 1 or -1 , accending -deccending 
+Skip// numeric properties , how many items you want to skip 
+Limit // how many data is displayed in the databases per page 
+
+.limit(5) //example 
+.skip(10)
+.sort({price : 1})
+
+package // query-to-mongo
+
+
+
+
+
+ 
