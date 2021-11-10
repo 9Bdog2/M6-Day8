@@ -1,0 +1,9 @@
+MongoD // embedding documents 
+
+MongoDb - Sort, skip, limit => pagination 
+
+Advanced queries 
+
+Very common in MongoDb to embed informations
+Serverside pagination is a killer feature 
+
