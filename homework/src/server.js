@@ -23,6 +23,7 @@ server.use("/comments", commentsRouter);
 server.use(notFoundHandler);
 server.use(badRequestHandler);
 server.use(genericErrorHandler);
+// ********************************* ERROR HANDLERS ***************************************
 
 mongoose.connect(process.env.MONGO_CONNECTION);
 
