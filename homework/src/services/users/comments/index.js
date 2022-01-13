@@ -1,6 +1,6 @@
 import express from "express";
 import q2m from "query-to-mongo";
-import commentsModel from "./schema.js";
+import commentsModel from "./src/services/users/schema.js";
 
 const commentsRouter = express.Router();
 
